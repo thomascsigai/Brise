@@ -88,6 +88,8 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(app->renderer);
 
+    Utils::DrawDebugAxis(appstate);
+
     // Render current demo
     currentDemo->Render(app);
 

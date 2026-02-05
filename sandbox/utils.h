@@ -2,8 +2,33 @@
 
 #include <SDL3/SDL.h>
 
+#include <Brise/Vec2.h>
+
 namespace Utils {
-	void DrawCircle(SDL_Renderer* renderer, int32_t centreX, int32_t centreY, int32_t radius)
+	constexpr int PIXELS_PER_METER = 50.0f;
+
+	// BRISE AXIS :
+	// ORIGIN AT THE CENTER OF THE SCREEN
+	// RIGHT HANDED - Y UP
+
+	// Convert World Coordinates (meters) to screen coordinates (pixels).
+	inline Brise::Vec2 WorldToScreenPosition(
+		const Brise::Vec2& worldPos, 
+		int screenWidth, int screenHeight
+	)
+	{
+		Brise::Vec2 pos;
+
+		pos.x = PIXELS_PER_METER * worldPos.x + screenWidth / 2;
+		pos.y = screenHeight / 2 - PIXELS_PER_METER * worldPos.y;
+
+		return pos;
+	}
+
+	void DrawCircle(SDL_Renderer* renderer, 
+		int32_t centreX, int32_t centreY, 
+		int32_t radius
+	)
 	{
 		const int32_t diameter = (radius * 2);
 
@@ -41,7 +66,10 @@ namespace Utils {
 		}
 	}
 
-	void DrawFilledCircle(SDL_Renderer* renderer, int x, int y, int radius, SDL_Color color)
+	void DrawFilledCircle(SDL_Renderer* renderer, 
+		int x, int y, int radius, 
+		SDL_Color color
+	)
 	{
 		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 		for (int w = 0; w < radius * 2; w++)
@@ -56,5 +84,63 @@ namespace Utils {
 				}
 			}
 		}
+	}
+
+	void DrawLine(SDL_Renderer* renderer, 
+		const Brise::Vec2& pos1, const Brise::Vec2& pos2, 
+		int screenWidth, int screenHeight
+	)
+	{
+		Brise::Vec2 screenPos1 = Brise::Vec2(pos1);
+		screenPos1 = WorldToScreenPosition(screenPos1, screenWidth, screenHeight);
+
+		Brise::Vec2 screenPos2 = Brise::Vec2(pos2);
+		screenPos2 = WorldToScreenPosition(screenPos2, screenWidth, screenHeight);
+
+		SDL_RenderLine(renderer, screenPos1.x, screenPos1.y, screenPos2.x, screenPos2.y);
+	}
+
+	void DrawDebugAxis(void* appstate)
+	{
+		auto* app = (AppContext*)appstate;
+		int screenWidth, screenHeight;
+		SDL_GetWindowSize(app->window, &screenWidth, &screenHeight);
+		
+		// Draw other lines
+		SDL_SetRenderDrawColor(app->renderer, 80, 80, 80, 100);
+		for (int i = 0; i < 2000; i++)
+		{
+			DrawLine(
+				app->renderer, 
+				{ -1000, 1000 - (float)i }, 
+				{ 1000, 1000 - (float)i },
+				screenWidth, screenHeight
+				);
+			DrawLine(
+				app->renderer,
+				{ -1000 + (float)i, -1000 },
+				{ -1000 + (float)i, 1000 },
+				screenWidth, screenHeight
+			);
+		}
+
+		// Draw x axis
+		SDL_SetRenderDrawColor(app->renderer, 155, 0, 0, 150);
+		DrawLine(
+			app->renderer,
+			{ -1000, 0 }, { 1000, 0 },
+			screenWidth, screenHeight
+		);
+
+		// Draw y axis
+		SDL_SetRenderDrawColor(app->renderer, 0, 0, 155, 150);
+		DrawLine(
+			app->renderer,
+			{ 0, 1000 }, { 0, -1000 },
+			screenWidth, screenHeight
+		);
+
+		// Reset drawing color to white
+		SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, 100);
 	}
 }
