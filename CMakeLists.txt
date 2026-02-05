@@ -16,7 +16,7 @@ option(BRISE_BUILD_SANDBOX "Build the Brise sandbox application" ON)
 add_library(
 	brise STATIC
 	src/Particle.cpp
- "sandbox/main.cpp")
+ )
 
 target_include_directories(brise PUBLIC ${PROJECT_SOURCE_DIR}/include)
 

@@ -1,7 +1,10 @@
-add_executable(brise_sandbox
-	main.cpp
-)
+# set the output directory for built objects.
+# This makes sure that the dynamic library goes into the build directory automatically.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-find_package(SDL3 REQUIRED)
+add_subdirectory(vendor/SDL EXCLUDE_FROM_ALL)
 
-target_link_libraries(brise_sandbox PRIVATE brise SDL3::SDL3)
+add_executable(brise_sandbox main.cpp)
+
+target_link_libraries(brise_sandbox PRIVATE SDL3::SDL3 brise)
