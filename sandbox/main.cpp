@@ -2,17 +2,17 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_init.h>
-#include <cmath>
+
+#include <memory>
+
+#include <app_context.h>
+#include <particles.h>
 
 constexpr uint32_t windowStartWidth = 1280;
 constexpr uint32_t windowStartHeight = 720;
 const char* windowTitle = "Brise Sandbox";
 
-struct AppContext {
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    SDL_AppResult app_quit = SDL_APP_CONTINUE;
-};
+BriseSandbox::Demo* currentDemo = nullptr;
 
 SDL_AppResult SDL_Fail() {
     SDL_LogError(SDL_LOG_CATEGORY_CUSTOM, "Error %s", SDL_GetError());
@@ -56,6 +56,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
        .renderer = renderer
     };
 
+    // set up first demo played
+    currentDemo = new BriseSandbox::ParticlesDemo();
+
     SDL_SetRenderVSync(renderer, -1);   // enable vysnc
 
     SDL_Log("Application started successfully!");
@@ -70,20 +73,23 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         app->app_quit = SDL_APP_SUCCESS;
     }
 
+    // Poll app events
+   currentDemo->PollEvent(app, event);
+
     return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppIterate(void* appstate) {
     auto* app = (AppContext*)appstate;
 
-    // draw a color
-    auto time = SDL_GetTicks() / 1000.f;
-    auto red = (std::sin(time) + 1) / 2.0 * 255;
-    auto green = (std::sin(time / 2) + 1) / 2.0 * 255;
-    auto blue = (std::sin(time) * 2 + 1) / 2.0 * 255;
+    // Update current demo
+    currentDemo->Update();
 
-    SDL_SetRenderDrawColor(app->renderer, red, green, blue, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(app->renderer);
+
+    // Render current demo
+    currentDemo->Render(app);
 
     SDL_RenderPresent(app->renderer);
 

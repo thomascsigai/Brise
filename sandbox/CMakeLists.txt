@@ -5,6 +5,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 add_subdirectory(vendor/SDL EXCLUDE_FROM_ALL)
 
-add_executable(brise_sandbox main.cpp)
+add_executable(brise_sandbox main.cpp "app_context.h" )
+
+target_include_directories(brise_sandbox PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/demos
+)
 
 target_link_libraries(brise_sandbox PRIVATE SDL3::SDL3 brise)
