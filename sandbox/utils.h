@@ -25,11 +25,23 @@ namespace Utils {
 		return pos;
 	}
 
-	void DrawCircle(SDL_Renderer* renderer, 
-		int32_t centreX, int32_t centreY, 
+	void DrawCircle(
+		SDL_Renderer* renderer, 
+		Brise::Vec2 pos, 
 		int32_t radius
 	)
 	{
+		int screenWidth, screenHeight;
+		SDL_GetWindowSize(
+			SDL_GetRenderWindow(renderer),
+			&screenWidth, 
+			&screenHeight
+		);
+
+		Brise::Vec2 screenPos = WorldToScreenPosition(
+			pos, screenWidth, screenHeight
+		);
+
 		const int32_t diameter = (radius * 2);
 
 		int32_t x = (radius - 1);
@@ -41,14 +53,14 @@ namespace Utils {
 		while (x >= y)
 		{
 			//  Each of the following renders an octant of the circle
-			SDL_RenderPoint(renderer, centreX + x, centreY - y);
-			SDL_RenderPoint(renderer, centreX + x, centreY + y);
-			SDL_RenderPoint(renderer, centreX - x, centreY - y);
-			SDL_RenderPoint(renderer, centreX - x, centreY + y);
-			SDL_RenderPoint(renderer, centreX + y, centreY - x);
-			SDL_RenderPoint(renderer, centreX + y, centreY + x);
-			SDL_RenderPoint(renderer, centreX - y, centreY - x);
-			SDL_RenderPoint(renderer, centreX - y, centreY + x);
+			SDL_RenderPoint(renderer, screenPos.x + x, screenPos.y - y);
+			SDL_RenderPoint(renderer, screenPos.x + x, screenPos.y + y);
+			SDL_RenderPoint(renderer, screenPos.x - x, screenPos.y - y);
+			SDL_RenderPoint(renderer, screenPos.x - x, screenPos.y + y);
+			SDL_RenderPoint(renderer, screenPos.x + y, screenPos.y - x);
+			SDL_RenderPoint(renderer, screenPos.x + y, screenPos.y + x);
+			SDL_RenderPoint(renderer, screenPos.x - y, screenPos.y - x);
+			SDL_RenderPoint(renderer, screenPos.x - y, screenPos.y + x);
 
 			if (error <= 0)
 			{
@@ -66,11 +78,24 @@ namespace Utils {
 		}
 	}
 
-	void DrawFilledCircle(SDL_Renderer* renderer, 
-		int x, int y, int radius, 
+	void DrawFilledCircle(
+		SDL_Renderer* renderer, 
+		Brise::Vec2 pos, 
+		int radius, 
 		SDL_Color color
 	)
 	{
+		int screenWidth, screenHeight;
+		SDL_GetWindowSize(
+			SDL_GetRenderWindow(renderer),
+			&screenWidth,
+			&screenHeight
+		);
+
+		Brise::Vec2 screenPos = WorldToScreenPosition(
+			pos, screenWidth, screenHeight
+		);
+
 		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 		for (int w = 0; w < radius * 2; w++)
 		{
@@ -80,13 +105,14 @@ namespace Utils {
 				int dy = radius - h; // vertical offset
 				if ((dx * dx + dy * dy) <= (radius * radius))
 				{
-					SDL_RenderPoint(renderer, x + dx, y + dy);
+					SDL_RenderPoint(renderer, screenPos.x + dx, screenPos.y + dy);
 				}
 			}
 		}
 	}
 
-	void DrawLine(SDL_Renderer* renderer, 
+	void DrawLine(
+		SDL_Renderer* renderer, 
 		const Brise::Vec2& pos1, const Brise::Vec2& pos2, 
 		int screenWidth, int screenHeight
 	)
