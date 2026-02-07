@@ -172,10 +172,16 @@ namespace Utils {
 
 	// Convert Screen Coordinates (pixels) to World coordinates (pixels).
 	inline Brise::Vec2 ScreenToWorld(
-		const Brise::Vec2& screenPos, 
-		int screenWidth, 
-		int screenHeight
+		SDL_Renderer* renderer,
+		const Brise::Vec2& screenPos
 	) {
+
+		int screenWidth, screenHeight;
+		SDL_GetWindowSize(
+			SDL_GetRenderWindow(renderer),
+			&screenWidth,
+			&screenHeight
+		);
 
 		float METERS_PER_PIXEL = 1.0f / PIXELS_PER_METER;
 

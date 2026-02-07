@@ -59,7 +59,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     // set up first demo played
     currentDemo = new BriseSandbox::ParticlesDemo();
 
-    SDL_SetRenderVSync(renderer, -1);   // enable vysnc
+    SDL_SetRenderVSync(renderer, 1);   // enable vysnc
 
     SDL_Log("Application started successfully!");
 
@@ -82,13 +82,54 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 SDL_AppResult SDL_AppIterate(void* appstate) {
     auto* app = (AppContext*)appstate;
 
+    // High-resolution delta time calculation (SDL3)
+    static uint64_t lastCounter = SDL_GetPerformanceCounter();
+    const uint64_t currentCounter = SDL_GetPerformanceCounter();
+
+    const uint64_t frequency = SDL_GetPerformanceFrequency();
+    const double deltaTime =
+        static_cast<double>(currentCounter - lastCounter) /
+        static_cast<double>(frequency);
+
+    lastCounter = currentCounter;
+
+    //FPS Counter
+
+    static double fpsTimer = 0.0;
+    static int frameCount = 0;
+    static double fps = 0.0;
+
+    fpsTimer += deltaTime;
+    frameCount++;
+
+    if (fpsTimer >= 1.0)
+    {
+        fps = frameCount / fpsTimer;
+        fpsTimer = 0.0;
+        frameCount = 0;
+    }
+
     // Update current demo
-    currentDemo->Update();
+    currentDemo->Update(deltaTime);
 
     SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(app->renderer);
 
     Utils::DrawDebugAxis(appstate);
+
+    // Render debug text
+
+    char text[256];
+    SDL_snprintf(
+        text,
+        sizeof(text),
+        "FPS: %.1f\n"
+        "Delta: %.2f ms\n",
+        fps,
+        deltaTime * 1000
+    );
+
+    SDL_RenderDebugText(app->renderer, 10, 10, text);
 
     // Render current demo
     currentDemo->Render(app);
