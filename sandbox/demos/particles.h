@@ -40,7 +40,7 @@ namespace BriseSandbox {
 
 					static std::random_device rd; 
 					static std::mt19937 gen(rd());
-					static std::uniform_real_distribution<float> dist(-10, 10);
+					static std::uniform_real_distribution<float> dist(-5, 5);
 
 					particles.push_back(Brise::Particle(mousePos, 1, 0.99f));
 					particles.back().acceleration = { dist(gen), dist(gen) };

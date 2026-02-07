@@ -5,7 +5,7 @@
 #include <Brise/Vec2.h>
 
 namespace Utils {
-	constexpr int PIXELS_PER_METER = 50.0f;
+	constexpr int PIXELS_PER_METER = 75.0f;
 
 	// BRISE AXIS :
 	// ORIGIN AT THE CENTER OF THE SCREEN

@@ -8,8 +8,8 @@
 #include <app_context.h>
 #include <particles.h>
 
-constexpr uint32_t windowStartWidth = 1280;
-constexpr uint32_t windowStartHeight = 720;
+constexpr uint32_t windowStartWidth = 1600;
+constexpr uint32_t windowStartHeight = 900;
 const char* windowTitle = "Brise Sandbox";
 
 BriseSandbox::Demo* currentDemo = nullptr;
