@@ -167,6 +167,22 @@ namespace Utils {
 		);
 
 		// Reset drawing color to white
-		SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, 100);
+		SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, 255);
+	}
+
+	// Convert Screen Coordinates (pixels) to World coordinates (pixels).
+	inline Brise::Vec2 ScreenToWorld(
+		const Brise::Vec2& screenPos, 
+		int screenWidth, 
+		int screenHeight
+	) {
+
+		float METERS_PER_PIXEL = 1.0f / PIXELS_PER_METER;
+
+		Brise::Vec2 pos;
+		pos.x = screenPos.x * METERS_PER_PIXEL - screenWidth / 2 * METERS_PER_PIXEL;
+		pos.y = (screenHeight / 2 - screenPos.y) * METERS_PER_PIXEL;
+
+		return pos;
 	}
 }
