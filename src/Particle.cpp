@@ -6,6 +6,8 @@ namespace Brise {
 	Particle::Particle(Vec2 position, float mass, float damping) 
 	: position(position), damping(damping) {
 		SetMass(mass);
+		velocity = { 0, 0 };
+		acceleration = { 0, 0 };
 	}
 
 	/// <summary>
@@ -26,7 +28,7 @@ namespace Brise {
 		velocity += acceleration * duration;
 
 		// Impose Drag
-		//velocity *= pow(damping, duration);
+		velocity *= pow(damping, duration);
 	}
 
 	void Particle::SetMass(float mass) {
