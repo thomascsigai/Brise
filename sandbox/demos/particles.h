@@ -4,6 +4,7 @@
 #include <vector>
 #include <utils.h>
 #include <iostream>
+#include <random>
 
 #include <demo.h>
 #include <Brise/particle.h>
@@ -23,7 +24,6 @@ namespace BriseSandbox {
 	private:
 		std::vector<Brise::Particle> particles;
 		float particleRadius = 25; // Particle radius in pixels for debug drawing
-		int indexSelectedParticle = -1;
 
 	public:
 
@@ -33,11 +33,17 @@ namespace BriseSandbox {
 				float y = event->button.y;
 
 				if (event->button.button == SDL_BUTTON_LEFT) {
-					for (int i = 0; i < particles.size(); i++) {
-						if (MouseOverParticle(appstate->renderer, x, y, particles[i])) {
-							indexSelectedParticle = i;
-						}
-					}
+					Brise::Vec2 mousePos = Utils::ScreenToWorld(
+						appstate->renderer, 
+						{ x, y }
+					);
+
+					static std::random_device rd; 
+					static std::mt19937 gen(rd());
+					static std::uniform_real_distribution<float> dist(-10, 10);
+
+					particles.push_back(Brise::Particle(mousePos, 1, 0.99f));
+					particles.back().acceleration = { dist(gen), dist(gen) };
 				}
 			}
 		}
@@ -51,40 +57,20 @@ namespace BriseSandbox {
 		void Render(AppContext* appstate) override {
 			SDL_SetRenderDrawColor(appstate->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 			
-			for (const auto& p : particles) {
+			for (auto& p : particles) {
 				Utils::DrawCircle(
 					appstate->renderer,
 					p.position,
 					particleRadius
 				);
-			}
 
-			if (indexSelectedParticle > -1) {
-				char text[256];
-				SDL_snprintf(
-					text,
-					sizeof(text),
-					"Selected particle -> x: %.2f y: %.2f",
-					particles[indexSelectedParticle].position.x,
-					particles[indexSelectedParticle].position.y
-				);
-
-				SDL_RenderDebugText(appstate->renderer, 10, 30, text);
+				DrawParticleInfos(appstate->renderer, p);
 			}
 		}
 		
 	private:
 		void Init() {
 			particles.reserve(MAX_PARTICLES);
-
-			particles.push_back(Brise::Particle({ 0, 0 }, 1, 0.99f));
-			particles[0].acceleration = { 1, 1 };
-			
-			particles.push_back(Brise::Particle({ -5, 5 }, 1, 0.99f));
-			particles[1].acceleration = { -2, -1 };
-			
-			particles.push_back(Brise::Particle({ 4, 2 }, 1, 0.99f));
-			particles[2].acceleration = { 3, 1 };
 		}
 
 		void Shutdown() {
@@ -109,6 +95,44 @@ namespace BriseSandbox {
 			}
 
 			return false;
+		}
+
+		void DrawParticleInfos(SDL_Renderer* renderer, const Brise::Particle& p) {
+			char text[256];
+			Brise::Vec2 pScreenPos = Utils::WorldToScreenPosition(renderer, p.position);
+
+			// Draw position under particle
+			SDL_snprintf(
+				text,
+				sizeof(text),
+				"Pos (%.2f, y:%.2f)",
+				p.position.x,
+				p.position.y
+			);
+
+			SDL_RenderDebugText(renderer, pScreenPos.x - 65, pScreenPos.y + 40, text);
+
+			// Draw velocity under particle
+			SDL_snprintf(
+				text,
+				sizeof(text),
+				"Vel (%.2f, y:%.2f)",
+				p.velocity.x,
+				p.velocity.y
+			);
+
+			SDL_RenderDebugText(renderer, pScreenPos.x - 65, pScreenPos.y + 50, text);
+
+			// Draw acceleration under particle
+			SDL_snprintf(
+				text,
+				sizeof(text),
+				"Acc (%.2f, y:%.2f)",
+				p.acceleration.x,
+				p.acceleration.y
+			);
+
+			SDL_RenderDebugText(renderer, pScreenPos.x - 65, pScreenPos.y + 60, text);
 		}
 	};
 }

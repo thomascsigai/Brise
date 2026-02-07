@@ -13,14 +13,43 @@ namespace Utils {
 
 	// Convert World Coordinates (meters) to screen coordinates (pixels).
 	inline Brise::Vec2 WorldToScreenPosition(
-		const Brise::Vec2& worldPos, 
-		int screenWidth, int screenHeight
+		SDL_Renderer* renderer,
+		const Brise::Vec2& worldPos
 	)
 	{
+		int screenWidth, screenHeight;
+		SDL_GetWindowSize(
+			SDL_GetRenderWindow(renderer),
+			&screenWidth,
+			&screenHeight
+		);
+
 		Brise::Vec2 pos;
 
 		pos.x = PIXELS_PER_METER * worldPos.x + screenWidth / 2;
 		pos.y = screenHeight / 2 - PIXELS_PER_METER * worldPos.y;
+
+		return pos;
+	}
+
+	// Convert Screen Coordinates (pixels) to World coordinates (meters).
+	inline Brise::Vec2 ScreenToWorld(
+		SDL_Renderer* renderer,
+		const Brise::Vec2& screenPos
+	) {
+
+		int screenWidth, screenHeight;
+		SDL_GetWindowSize(
+			SDL_GetRenderWindow(renderer),
+			&screenWidth,
+			&screenHeight
+		);
+
+		float METERS_PER_PIXEL = 1.0f / PIXELS_PER_METER;
+
+		Brise::Vec2 pos;
+		pos.x = screenPos.x * METERS_PER_PIXEL - screenWidth / 2 * METERS_PER_PIXEL;
+		pos.y = (screenHeight / 2 - screenPos.y) * METERS_PER_PIXEL;
 
 		return pos;
 	}
@@ -31,16 +60,8 @@ namespace Utils {
 		int32_t radius
 	)
 	{
-		int screenWidth, screenHeight;
-		SDL_GetWindowSize(
-			SDL_GetRenderWindow(renderer),
-			&screenWidth, 
-			&screenHeight
-		);
 
-		Brise::Vec2 screenPos = WorldToScreenPosition(
-			pos, screenWidth, screenHeight
-		);
+		Brise::Vec2 screenPos = WorldToScreenPosition(renderer, pos);
 
 		const int32_t diameter = (radius * 2);
 
@@ -85,16 +106,7 @@ namespace Utils {
 		SDL_Color color
 	)
 	{
-		int screenWidth, screenHeight;
-		SDL_GetWindowSize(
-			SDL_GetRenderWindow(renderer),
-			&screenWidth,
-			&screenHeight
-		);
-
-		Brise::Vec2 screenPos = WorldToScreenPosition(
-			pos, screenWidth, screenHeight
-		);
+		Brise::Vec2 screenPos = WorldToScreenPosition(renderer, pos);
 
 		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 		for (int w = 0; w < radius * 2; w++)
@@ -113,15 +125,14 @@ namespace Utils {
 
 	void DrawLine(
 		SDL_Renderer* renderer, 
-		const Brise::Vec2& pos1, const Brise::Vec2& pos2, 
-		int screenWidth, int screenHeight
+		const Brise::Vec2& pos1, const Brise::Vec2& pos2
 	)
 	{
 		Brise::Vec2 screenPos1 = Brise::Vec2(pos1);
-		screenPos1 = WorldToScreenPosition(screenPos1, screenWidth, screenHeight);
+		screenPos1 = WorldToScreenPosition(renderer, screenPos1);
 
 		Brise::Vec2 screenPos2 = Brise::Vec2(pos2);
-		screenPos2 = WorldToScreenPosition(screenPos2, screenWidth, screenHeight);
+		screenPos2 = WorldToScreenPosition(renderer, screenPos2);
 
 		SDL_RenderLine(renderer, screenPos1.x, screenPos1.y, screenPos2.x, screenPos2.y);
 	}
@@ -139,14 +150,12 @@ namespace Utils {
 			DrawLine(
 				app->renderer, 
 				{ -1000, 1000 - (float)i }, 
-				{ 1000, 1000 - (float)i },
-				screenWidth, screenHeight
+				{ 1000, 1000 - (float)i }
 				);
 			DrawLine(
 				app->renderer,
 				{ -1000 + (float)i, -1000 },
-				{ -1000 + (float)i, 1000 },
-				screenWidth, screenHeight
+				{ -1000 + (float)i, 1000 }
 			);
 		}
 
@@ -154,41 +163,17 @@ namespace Utils {
 		SDL_SetRenderDrawColor(app->renderer, 155, 0, 0, 150);
 		DrawLine(
 			app->renderer,
-			{ -1000, 0 }, { 1000, 0 },
-			screenWidth, screenHeight
+			{ -1000, 0 }, { 1000, 0 }
 		);
 
 		// Draw y axis
 		SDL_SetRenderDrawColor(app->renderer, 0, 0, 155, 150);
 		DrawLine(
 			app->renderer,
-			{ 0, 1000 }, { 0, -1000 },
-			screenWidth, screenHeight
+			{ 0, 1000 }, { 0, -1000 }
 		);
 
 		// Reset drawing color to white
 		SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, 255);
-	}
-
-	// Convert Screen Coordinates (pixels) to World coordinates (pixels).
-	inline Brise::Vec2 ScreenToWorld(
-		SDL_Renderer* renderer,
-		const Brise::Vec2& screenPos
-	) {
-
-		int screenWidth, screenHeight;
-		SDL_GetWindowSize(
-			SDL_GetRenderWindow(renderer),
-			&screenWidth,
-			&screenHeight
-		);
-
-		float METERS_PER_PIXEL = 1.0f / PIXELS_PER_METER;
-
-		Brise::Vec2 pos;
-		pos.x = screenPos.x * METERS_PER_PIXEL - screenWidth / 2 * METERS_PER_PIXEL;
-		pos.y = (screenHeight / 2 - screenPos.y) * METERS_PER_PIXEL;
-
-		return pos;
 	}
 }
