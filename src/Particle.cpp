@@ -26,7 +26,7 @@ namespace Brise {
 		velocity += acceleration * duration;
 
 		// Impose Drag
-		velocity *= pow(damping, duration);
+		//velocity *= pow(damping, duration);
 	}
 
 	void Particle::SetMass(float mass) {

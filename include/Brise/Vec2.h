@@ -85,6 +85,10 @@ namespace Brise
 		return (v1 - v2 * (Dot(v1, v2) / Dot(v2, v2)));
 	}
 
+	inline float DistanceSquared(const Vec2& v1, const Vec2 v2)
+	{
+		return (powf(v2.x - v1.x, 2) + powf(v2.y - v1.y, 2));
+	}
 	
 	// << operator overload to cout vector components
 	std::ostream& operator<<(std::ostream& os, const Vec2& v);
