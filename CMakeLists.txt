@@ -17,6 +17,7 @@ add_library(
 	src/Particle.cpp
 	src/Vec2.cpp
 	src/PForceGen.cpp
+	src/World.cpp
 )
 
 target_include_directories(brise PUBLIC ${PROJECT_SOURCE_DIR}/include)
