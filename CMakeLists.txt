@@ -16,6 +16,7 @@ add_library(
 	brise STATIC
 	src/Particle.cpp
 	src/Vec2.cpp
+	src/PForceGen.cpp
 )
 
 target_include_directories(brise PUBLIC ${PROJECT_SOURCE_DIR}/include)
