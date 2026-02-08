@@ -4,11 +4,11 @@
 #include <vector>
 #include <utils.h>
 #include <iostream>
-#include <random>
 
 #include <demo.h>
 #include <Brise/particle.h>
 #include <Brise/Vec2.h>
+#include <Brise/PForceGen.h>
 
 namespace BriseSandbox {
 
@@ -24,6 +24,7 @@ namespace BriseSandbox {
 	private:
 		std::vector<Brise::Particle> particles;
 		float particleRadius = 25; // Particle radius in pixels for debug drawing
+		Brise::ParticleForceRegistry forceRegistry = Brise::ParticleForceRegistry();
 
 	public:
 
@@ -38,17 +39,15 @@ namespace BriseSandbox {
 						{ x, y }
 					);
 
-					static std::random_device rd; 
-					static std::mt19937 gen(rd());
-					static std::uniform_real_distribution<float> dist(-5, 5);
-
-					particles.push_back(Brise::Particle(mousePos, 1, 0.99f));
-					particles.back().acceleration = { dist(gen), dist(gen) };
+					particles.push_back(Brise::Particle(mousePos, 1, 0.999f));
+					particles.back().acceleration = { 0, -9.81 };
 				}
 			}
 		}
 
 		void Update(double deltaTime) override {
+			forceRegistry.UpdateForces(deltaTime);
+			
 			for (auto& p : particles) {
 				p.Integrate(deltaTime);
 			}
@@ -123,7 +122,7 @@ namespace BriseSandbox {
 
 			SDL_RenderDebugText(renderer, pScreenPos.x - 65, pScreenPos.y + 50, text);
 
-			// Draw acceleration under particle
+			// Draw force accumulation under particle
 			SDL_snprintf(
 				text,
 				sizeof(text),

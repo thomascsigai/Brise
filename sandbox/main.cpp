@@ -118,6 +118,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     Utils::DrawDebugAxis(appstate);
 
     // Render debug text
+    SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
     char text[256];
     SDL_snprintf(
