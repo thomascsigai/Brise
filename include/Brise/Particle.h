@@ -29,6 +29,7 @@ namespace Brise {
 		void SetMass(float mass);
 		void SetInfiniteMass();
 		float GetMass();
+		bool HasFiniteMass();
 
 	};
 }

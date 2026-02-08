@@ -19,7 +19,7 @@ namespace Brise {
 	/// <param name="duration">In ms</param>
 	void Particle::Integrate(float duration) {
 		// Don't integrate particles with infinite mass
-		if (inverseMass <= 0) return;
+		if (inverseMass == 0) return;
 
 		BR_ASSERT(duration > 0);
 
@@ -28,7 +28,7 @@ namespace Brise {
 
 		// Get acceleration from the forces
 		Vec2 resultingAcc = acceleration;
-		resultingAcc += forceAccum * duration;
+		resultingAcc += forceAccum * inverseMass;
 
 		// Update velocity from acceleration
 		velocity += resultingAcc * duration;
@@ -62,5 +62,9 @@ namespace Brise {
 
 	void Particle::ClearAccumulator() {
 		forceAccum = { 0, 0 };
+	}
+
+	bool Particle::HasFiniteMass() {
+		return (inverseMass > 0 ? true : false);
 	}
 }
