@@ -15,12 +15,16 @@ namespace Brise {
 
 		float inverseMass;
 		float damping;
+		Vec2 forceAccum;
 
 	public:
 
 		Particle(Vec2 _pos, float mass, float damping);
 
 		void Integrate(float dt);
+
+		void AddForce(const Vec2& force);
+		void ClearAccumulator();
 		
 		void SetMass(float mass);
 		void SetInfiniteMass();

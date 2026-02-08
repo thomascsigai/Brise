@@ -8,6 +8,8 @@ namespace Brise {
 		SetMass(mass);
 		velocity = { 0, 0 };
 		acceleration = { 0, 0 };
+
+		forceAccum = { 0, 0 };
 	}
 
 	/// <summary>
@@ -24,11 +26,18 @@ namespace Brise {
 		// Update Linear Position
 		position += velocity * duration;
 
+		// Get acceleration from the forces
+		Vec2 resultingAcc = acceleration;
+		resultingAcc += forceAccum * duration;
+
 		// Update velocity from acceleration
-		velocity += acceleration * duration;
+		velocity += resultingAcc * duration;
 
 		// Impose Drag
 		velocity *= pow(damping, duration);
+
+		// Clear the accumulator
+		ClearAccumulator();
 	}
 
 	void Particle::SetMass(float mass) {
@@ -45,5 +54,13 @@ namespace Brise {
 		if (inverseMass == 0) return std::numeric_limits<float>::max();
 		
 		return (1.0f / inverseMass);
+	}
+
+	void Particle::AddForce(const Vec2& force) {
+		forceAccum += force;
+	}
+
+	void Particle::ClearAccumulator() {
+		forceAccum = { 0, 0 };
 	}
 }
