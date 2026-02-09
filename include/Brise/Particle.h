@@ -26,10 +26,12 @@ namespace Brise {
 		void AddForce(const Vec2& force);
 		void ClearAccumulator();
 		
-		void SetMass(float mass);
+		void SetMass(float value);
 		void SetInfiniteMass();
 		float GetMass();
 		bool HasFiniteMass();
+
+		void SetDamping(float value);
 
 	};
 }

@@ -13,9 +13,11 @@ namespace Brise {
 		}
 	}
 
-	void World::AddParticule(Vec2 position, float mass, float damping) {
+	Particle& World::AddParticule(Vec2 position, float mass, float damping) {
 		particles.push_back(Particle(position, mass, damping));
 		particles.back().acceleration = gravity; // Set world gravity as constant acceleration
+
+		return particles.back();
 	}
 
 	const World::ParticleContainer& World::GetParticles() const {

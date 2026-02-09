@@ -26,7 +26,7 @@ namespace Brise {
 		explicit World(size_t numParticles = DEFAULT_NUM_PARTICLES);
 
 		void Step(float deltaTime);
-		void AddParticule(Vec2 position, float mass, float damping);
+		Particle& AddParticule(Vec2 position, float mass, float damping);
 		const ParticleContainer& GetParticles() const;
 
 	private:

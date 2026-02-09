@@ -40,10 +40,10 @@ namespace Brise {
 		ClearAccumulator();
 	}
 
-	void Particle::SetMass(float mass) {
-		BR_ASSERT(mass > 0);
+	void Particle::SetMass(float value) {
+		BR_ASSERT(value > 0);
 
-		inverseMass = 1 / mass;
+		inverseMass = 1 / value;
 	}
 
 	void Particle::SetInfiniteMass() {
@@ -66,5 +66,9 @@ namespace Brise {
 
 	bool Particle::HasFiniteMass() {
 		return (inverseMass > 0 ? true : false);
+	}
+
+	void Particle::SetDamping(float value) {
+		damping = value;
 	}
 }
