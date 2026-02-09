@@ -7,12 +7,13 @@
 
 #include <app_context.h>
 #include <particles.h>
+#include <ballistics.h>
 
 constexpr uint32_t windowStartWidth = 1600;
 constexpr uint32_t windowStartHeight = 900;
 const char* windowTitle = "Brise Sandbox";
 
-BriseSandbox::Demo* currentDemo = nullptr;
+std::unique_ptr<BriseSandbox::Demo> currentDemo;
 
 SDL_AppResult SDL_Fail() {
     SDL_LogError(SDL_LOG_CATEGORY_CUSTOM, "Error %s", SDL_GetError());
@@ -57,7 +58,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     };
 
     // set up first demo played
-    currentDemo = new BriseSandbox::ParticlesDemo();
+    currentDemo = std::make_unique<BriseSandbox::BallisticsDemo>();
 
     SDL_SetRenderVSync(renderer, 1);   // enable vysnc
 
@@ -71,6 +72,15 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 
     if (event->type == SDL_EVENT_QUIT) {
         app->app_quit = SDL_APP_SUCCESS;
+    }
+
+    if (event->type == SDL_EVENT_KEY_DOWN) {
+        if (event->key.scancode == SDL_SCANCODE_1) {
+            currentDemo = std::make_unique<BriseSandbox::ParticlesDemo>();
+        }
+        else if (event->key.scancode == SDL_SCANCODE_2) {
+            currentDemo = std::make_unique<BriseSandbox::BallisticsDemo>();
+        }
     }
 
     // Poll app events

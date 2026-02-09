@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 
 #include <Brise/Vec2.h>
+#include <Brise/Particle.h>
 
 namespace Utils {
 	constexpr int PIXELS_PER_METER = 75.0f;
@@ -224,7 +225,8 @@ namespace Utils {
 	bool MouseOverParticle(
 		SDL_Renderer* renderer,
 		float mouseX, float mouseY,
-		const Brise::Particle& p
+		const Brise::Particle& p,
+		float particleRadius
 	) {
 		Brise::Vec2 mousePos = Utils::ScreenToWorld(renderer, { mouseX, mouseY });
 
