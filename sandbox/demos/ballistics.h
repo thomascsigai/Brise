@@ -86,7 +86,7 @@ namespace BriseSandbox {
 				break;
 
 			case Artillery:
-				p.velocity = { 30, 40 }; // 50 m/s
+				p.velocity = { 10, 15 }; // 50 m/s
 				p.acceleration = { 0, -20 };
 				p.SetMass(200);
 				break;
