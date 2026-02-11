@@ -8,6 +8,7 @@
 #include <app_context.h>
 #include <particles.h>
 #include <ballistics.h>
+#include <springs.h>
 
 constexpr uint32_t windowStartWidth = 1600;
 constexpr uint32_t windowStartHeight = 900;
@@ -58,7 +59,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     };
 
     // set up first demo played
-    currentDemo = std::make_unique<BriseSandbox::BallisticsDemo>();
+    currentDemo = std::make_unique<BriseSandbox::ParticlesDemo>();
 
     SDL_SetRenderVSync(renderer, 1);   // enable vysnc
 
@@ -80,6 +81,9 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         }
         else if (event->key.scancode == SDL_SCANCODE_2) {
             currentDemo = std::make_unique<BriseSandbox::BallisticsDemo>();
+        }
+        else if (event->key.scancode == SDL_SCANCODE_3) {
+            currentDemo = std::make_unique<BriseSandbox::SpringsDemo>();
         }
     }
 
