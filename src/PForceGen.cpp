@@ -30,16 +30,40 @@ namespace Brise {
 
 	void ParticleForceRegistry::UpdateForces(float duration) {
 		for (auto& reg : registry) {
-			reg.fg->UpdateForce(*reg.particle, duration);
+			reg.fg->UpdateForce(reg.particle, duration);
 		}
 	}
+
+	// GRAVITY
 
 	ParticleGravity::ParticleGravity(const Vec2& gravityForce) 
 	: gravity(gravityForce) {}
 
-	void ParticleGravity::UpdateForce(Particle& particle, float duration) {
-		if (not particle.HasFiniteMass()) return;
+	void ParticleGravity::UpdateForce(Particle* particle, float duration) {
+		if (not particle->HasFiniteMass()) return;
 
-		particle.AddForce(gravity * particle.GetMass());
+		particle->AddForce(gravity * particle->GetMass());
+	}
+
+	// SPRINGS
+
+	ParticleSpring::ParticleSpring(Particle* other, float springConstant, float restLength)
+		: other(other), springConstant(springConstant), restLength(restLength)
+	{}
+
+	void ParticleSpring::UpdateForce(Particle* particle, float duration) {
+		Vec2 force = particle->position - other->position;
+
+		float length = Magnitude(force);
+
+		float magnitude = (length - restLength);
+		magnitude *= springConstant;
+
+		force = Normalize(force);
+
+		// Hooke : F = -k (x - L0)
+		force *= -magnitude;
+
+		particle->AddForce(force);
 	}
 }

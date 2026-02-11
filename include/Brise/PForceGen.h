@@ -7,7 +7,7 @@ namespace Brise {
 
 	class ParticleForceGenerator {
 	public: 
-		virtual void UpdateForce(Particle& particle, float duration) = 0;
+		virtual void UpdateForce(Particle* particle, float duration) = 0;
 	};
 
 	class ParticleForceRegistry {
@@ -37,7 +37,20 @@ namespace Brise {
 	public: 
 		ParticleGravity(const Vec2& gravityForce);
 
-		virtual void UpdateForce(Particle& particle, float duration) override;
+		virtual void UpdateForce(Particle* particle, float duration) override;
+	};
+
+	// Spring force generator
+	class ParticleSpring : public ParticleForceGenerator {
+	private:
+		Particle* other;
+		float springConstant;
+		float restLength;
+
+	public:
+		ParticleSpring(Particle* other, float springConstant, float restLength);
+
+		virtual void UpdateForce(Particle* particle, float duration) override;
 	};
 
 }
