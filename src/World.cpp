@@ -20,6 +20,10 @@ namespace Brise {
 		return particles.back();
 	}
 
+	void World::AddForceGenToRegistry(Particle* particle, ParticleForceGenerator* fg) {
+		forceRegistry.Add(particle, fg);
+	}
+
 	const World::ParticleContainer& World::GetParticles() const {
 		return particles;
 	}

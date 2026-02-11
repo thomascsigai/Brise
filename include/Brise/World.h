@@ -29,6 +29,8 @@ namespace Brise {
 		Particle& AddParticule(Vec2 position, float mass, float damping);
 		const ParticleContainer& GetParticles() const;
 
+		void AddForceGenToRegistry(Particle* particle, ParticleForceGenerator* fg);
+
 	private:
 
 		void Init(size_t numParticles);
