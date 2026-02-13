@@ -9,6 +9,7 @@
 #include <particles.h>
 #include <ballistics.h>
 #include <springs.h>
+#include <buoyancy.h>
 
 constexpr uint32_t windowStartWidth = 1600;
 constexpr uint32_t windowStartHeight = 900;
@@ -85,10 +86,13 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         else if (event->key.scancode == SDL_SCANCODE_3) {
             currentDemo = std::make_unique<BriseSandbox::SpringsDemo>();
         }
+        else if (event->key.scancode == SDL_SCANCODE_4) {
+            currentDemo = std::make_unique<BriseSandbox::BuoyancyDemo>();
+        }
     }
 
     // Poll app events
-   currentDemo->PollEvent(app, event);
+    currentDemo->PollEvent(app, event);
 
     return SDL_APP_CONTINUE;
 }
