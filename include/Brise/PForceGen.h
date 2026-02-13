@@ -79,4 +79,18 @@ namespace Brise {
 		virtual void UpdateForce(Particle* particle, float duration) override;
 	};
 
+	// Buoyancy generator (simulate a particle floating)
+	class ParticleBuoyancy : public ParticleForceGenerator {
+	private:
+		float maxDepth;
+		float volume;
+		float waterHeight;
+		float liquidDensity; // water : 1000 kg/m^3
+
+	public:
+		ParticleBuoyancy(float maxDepth, float volume, float waterHeight, float liquidDensity = 1000.0f);
+
+		virtual void UpdateForce(Particle* particle, float duration) override;
+	};
+
 }

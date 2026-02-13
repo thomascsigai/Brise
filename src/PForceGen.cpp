@@ -107,4 +107,30 @@ namespace Brise {
 
 		particle->AddForce(force);
 	}
+
+	// BUYOANCY
+	ParticleBuoyancy::ParticleBuoyancy(float maxDepth, float volume, float waterHeight, float liquidDensity)
+		: maxDepth(maxDepth), volume(volume), waterHeight(waterHeight), liquidDensity(liquidDensity) 
+	{ }
+
+	void ParticleBuoyancy::UpdateForce(Particle* particle, float duration) {
+		// Get submersion depth
+		float depth = particle->position.y;
+
+		// Checks if out of water
+		if (depth >= waterHeight + maxDepth) return;
+		Vec2 force = { 0, 0 };
+
+		// Checks if you're at max depth
+		if (depth <= waterHeight - maxDepth) {
+			force.y = liquidDensity * volume;
+			particle->AddForce(force);
+			return;
+		}
+
+		// Otherwise, partyly submerged
+		float submerged = (waterHeight + maxDepth - depth) / (2.0f * maxDepth);
+		force.y = liquidDensity * volume * submerged;
+		particle->AddForce(force);
+	}
 }
