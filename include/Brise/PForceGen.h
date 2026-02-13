@@ -53,4 +53,30 @@ namespace Brise {
 		virtual void UpdateForce(Particle* particle, float duration) override;
 	};
 
+	// Anchored Spring force generator
+	class AnchoredParticleSpring : public ParticleForceGenerator {
+	private:
+		Vec2 anchor;
+		float springConstant;
+		float restLength;
+
+	public:
+		AnchoredParticleSpring(Vec2 anchor, float springConstant, float restLength);
+
+		virtual void UpdateForce(Particle* particle, float duration) override;
+	};
+
+	// Bungee generator (spring that only pull objects)
+	class ParticleBungee : public ParticleForceGenerator {
+	private:
+		Particle* other;
+		float springConstant;
+		float restLength;
+
+	public:
+		ParticleBungee(Particle* other, float springConstant, float restLength);
+
+		virtual void UpdateForce(Particle* particle, float duration) override;
+	};
+
 }

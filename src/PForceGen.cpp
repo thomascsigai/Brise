@@ -48,13 +48,13 @@ namespace Brise {
 	// SPRINGS
 
 	ParticleSpring::ParticleSpring(Particle* other, float springConstant, float restLength)
-		: other(other), springConstant(springConstant), restLength(restLength)
-	{}
+		: other(other), springConstant(springConstant), restLength(restLength) {}
 
 	void ParticleSpring::UpdateForce(Particle* particle, float duration) {
 		Vec2 force = particle->position - other->position;
 
 		float length = Magnitude(force);
+		if (length <= 0.0001f) return;
 
 		float magnitude = (length - restLength);
 		magnitude *= springConstant;
@@ -63,6 +63,47 @@ namespace Brise {
 
 		// Hooke : F = -k (x - L0)
 		force *= -magnitude;
+
+		particle->AddForce(force);
+	}
+
+	// ANCHORED SPRING
+
+	AnchoredParticleSpring::AnchoredParticleSpring(Vec2 anchor, float springConstant, float restLength)
+		: anchor(anchor), springConstant(springConstant), restLength(restLength) {}
+
+	void AnchoredParticleSpring::UpdateForce(Particle* particle, float duration) {
+		Vec2 delta = particle->position - anchor;
+
+		float length = Magnitude(delta);
+		if (length <= 0.0001f) return;
+
+		float displacement = length - restLength;
+
+		Vec2 force = delta / length;
+		force *= -springConstant * displacement;
+
+		particle->AddForce(force);
+	}
+
+	// BUNGEE SPRING
+
+	ParticleBungee::ParticleBungee(Particle* other, float springConstant, float restLength)
+		: other(other), springConstant(springConstant), restLength(restLength) { }
+
+	void ParticleBungee::UpdateForce(Particle* particle, float duration) {
+		Vec2 delta = particle->position - other->position;
+
+		float length = Magnitude(delta);
+		if (length <= 0.0001f) return;
+
+		if (length <= restLength)
+			return;
+
+		float displacement = length - restLength;
+
+		Vec2 force = delta / length;
+		force *= -springConstant * displacement;
 
 		particle->AddForce(force);
 	}
