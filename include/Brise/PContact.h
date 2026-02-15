@@ -3,6 +3,8 @@
 #include <Brise/Particle.h>
 #include <Brise/Vec2.h>
 
+#include <limits>
+
 namespace Brise {
 
 	class ParticleContact {
@@ -14,22 +16,25 @@ namespace Brise {
 
 		float restitution;
 		Vec2 contactNormal;
+		float penetration;
+
+		friend ParticleContactResolver;
 
 	protected:
-		void resolve(float duration) {
-			resolveVelocity(duration);
-			//ResolveInterpenetration(duration);
+		void Resolve(float duration) {
+			ResolveVelocity(duration);
+			ResolveInterpenetration(duration);
 		}
 
-		float calculateSeparatingVelocity() const {
+		float CalculateSeparatingVelocity() const {
 			Vec2 relativeVelocity = particle[0]->velocity;
 			if (particle[1]) relativeVelocity -= particle[1]->velocity;
 			return Dot(relativeVelocity, contactNormal);
 		}
 
 	private:
-		void resolveVelocity(float duration) {
-			float separatingVelocity = calculateSeparatingVelocity();
+		void ResolveVelocity(float duration) {
+			float separatingVelocity = CalculateSeparatingVelocity();
 
 			// checks if particles are separating
 			if (separatingVelocity > 0) return; // no impulse required
@@ -52,10 +57,86 @@ namespace Brise {
 			// Apply impulse
 			particle[0]->velocity += impulsePerIMass * particle[0]->GetInverseMass();
 			if (particle[1]) {
-				particle[1]->velocity += impulsePerIMass * -particle[1]->GetInverseMass();
+				particle[1]->velocity += impulsePerIMass * (- particle[1]->GetInverseMass());
 			}
 		}
 
+		void ResolveInterpenetration(float duration) {
+			// Checks if no penetration
+			if (penetration <= 0) return;
+
+			// apply the change in proportion of the inverseMass
+			float totalInverseMass = particle[0]->GetInverseMass();
+			if (particle[1]) totalInverseMass += particle[1]->GetInverseMass();
+
+			// Checks if both particles have infiniteMass
+			if (totalInverseMass <= 0) return;
+
+			// Calculate the movement amounts
+			Vec2 movePerIMass = contactNormal * (penetration / totalInverseMass);
+			
+			Vec2 particleMovement0, particleMovement1;
+			particleMovement0 = movePerIMass * particle[0]->GetInverseMass();
+			if (particle[1]) {
+				particleMovement1 = movePerIMass * (- particle[1]->GetInverseMass());
+			}
+			else {
+				particleMovement1 = { 0, 0 };
+			}
+
+			// Apply penetration resolution
+			particle[0]->position += particleMovement0;
+			if (particle[1]) {
+				particle[1]->position += particleMovement1;
+			}
+		}
+
+	};
+
+	class ParticleContactResolver {
+		
+	protected:
+
+		unsigned iterations;
+		unsigned iterationsUsed;
+
+	public:
+
+		ParticleContactResolver(unsigned iterations) 
+		: iterations(iterations) { }
+
+		void SetIterations(unsigned iterations) {
+			iterations = iterations;
+		}
+
+		void resolveContacts(ParticleContact* contactArray, unsigned numContacts, float duration) {
+			unsigned i;
+			iterationsUsed = 0;
+
+			while (iterationsUsed < iterations) {
+				// Find contact with largest closing velocity
+				float max = std::numeric_limits<float>::max();
+				unsigned maxIndex = numContacts;
+				for (i = 0; i < numContacts; i++) {
+					float sepVel = contactArray[i].CalculateSeparatingVelocity();
+					
+					if (sepVel < max && (sepVel < 0 || contactArray[i].penetration > 0)) {
+						max = sepVel;
+						maxIndex = i;
+					}
+				}
+
+				if (maxIndex == numContacts) break;
+				contactArray[maxIndex].Resolve(duration);
+				iterationsUsed++;
+			}
+		}
+
+	};
+
+	class ParticleContactGenerator {
+	public:
+		virtual unsigned AddContact(ParticleContact* contact, unsigned limit) const = 0;
 	};
 
 }
