@@ -28,7 +28,8 @@ namespace Brise {
 		
 		void SetMass(float value);
 		void SetInfiniteMass();
-		float GetMass();
+		float GetMass() const;
+		float GetInverseMass() const;
 		bool HasFiniteMass();
 
 		void SetDamping(float value);

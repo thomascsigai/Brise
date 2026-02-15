@@ -50,10 +50,14 @@ namespace Brise {
 		inverseMass = 0;
 	}
 
-	float Particle::GetMass() {
+	float Particle::GetMass() const {
 		if (inverseMass == 0) return std::numeric_limits<float>::max();
 		
 		return (1.0f / inverseMass);
+	}
+
+	float Particle::GetInverseMass() const {
+		return inverseMass;
 	}
 
 	void Particle::AddForce(const Vec2& force) {
