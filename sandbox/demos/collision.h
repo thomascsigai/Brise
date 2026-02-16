@@ -11,6 +11,18 @@
 
 namespace BriseSandbox {
 
+	enum CollisionTest {
+		simpleCollision,
+		nonLinearContact,
+		differentSpeed,
+		differentMasses,
+		zeroRestitution,
+		midRestitution,
+		infiniteMass,
+		interpenetration,
+		stabilization
+	};
+
 	class CollisionDemo : public Demo {
 
 	public:
@@ -21,12 +33,59 @@ namespace BriseSandbox {
 
 		float particleRadius = 25; // Particle radius in pixels for debug drawing
 		Brise::World physicsWorld;
+		
 		Brise::Particle* p0;
 		Brise::Particle* p1;
+
+		CollisionTest currentTest = CollisionTest::simpleCollision;
 
 	public:
 
 		void PollEvent(AppContext* appstate, SDL_Event* event) override {
+            if (event->type == SDL_EVENT_KEY_DOWN)
+            {
+                switch (event->key.scancode)
+                {
+                case SDL_SCANCODE_Q:
+                    SetupTest(simpleCollision);
+                    break;
+
+                case SDL_SCANCODE_W:
+                    SetupTest(nonLinearContact);
+                    break;
+
+                case SDL_SCANCODE_E:
+                    SetupTest(differentSpeed);
+                    break;
+
+                case SDL_SCANCODE_R:
+                    SetupTest(differentMasses);
+                    break;
+
+                case SDL_SCANCODE_T:
+                    SetupTest(zeroRestitution);
+                    break;
+
+                case SDL_SCANCODE_Y:
+                    SetupTest(midRestitution);
+                    break;
+
+                case SDL_SCANCODE_U:
+                    SetupTest(infiniteMass);
+                    break;
+
+                case SDL_SCANCODE_I:
+                    SetupTest(interpenetration);
+                    break;
+
+                case SDL_SCANCODE_O:
+                    SetupTest(stabilization);
+                    break;
+
+                default:
+                    break;
+                }
+            }
 		}
 
 		void Update(double deltaTime) override {
@@ -47,7 +106,11 @@ namespace BriseSandbox {
 				float penetration = 0.7f - distanceP0P1;
 				contact.penetration = penetration;
 
-				contact.restitution = 1.0f;
+                switch (currentTest) {
+                case zeroRestitution: contact.restitution = 0.0f; break;
+                case midRestitution:  contact.restitution = 0.5f; break;
+                default:              contact.restitution = 1.0f; break;
+                }
 
 				contact.Resolve(deltaTime);
 			}
@@ -67,18 +130,124 @@ namespace BriseSandbox {
 
 				Utils::DrawParticleInfos(appstate->renderer, p);
 			}
+            SDL_SetRenderScale(appstate->renderer, 4, 4);
+            SDL_RenderDebugText(
+                appstate->renderer,
+                5, 200,
+                GetTestName()
+            );
+            SDL_SetRenderScale(appstate->renderer, 1, 1);
 		}
 
 	private:
 		void Init() {
-			p0 = &physicsWorld.AddParticule({ -3, 0.3 }, 3, 0.99);
-			p1 = &physicsWorld.AddParticule({ 3, 0 }, 3, 0.99);
+
+			switch (currentTest) {
+
+            case simpleCollision:
+                p0 = &physicsWorld.AddParticule({ -3, 0 }, 3, 0.99f);
+                p1 = &physicsWorld.AddParticule({ 3, 0 }, 3, 0.99f);
+                p0->velocity = { 2, 0 };
+                p1->velocity = { -2, 0 };
+                break;
+
+
+            case nonLinearContact:
+                p0 = &physicsWorld.AddParticule({ -3, -1 }, 3, 0.99f);
+                p1 = &physicsWorld.AddParticule({ 3, 0 }, 3, 0.99f);
+                p0->velocity = { 2, 1 };
+                p1->velocity = { -2, 0 };
+                break;
+
+
+            case differentSpeed:
+                p0 = &physicsWorld.AddParticule({ -3, 0 }, 3, 0.99f);
+                p1 = &physicsWorld.AddParticule({ 3, 0 }, 3, 0.99f);
+                p0->velocity = { 5, 0 };
+                p1->velocity = { -1, 0 };
+                break;
+
+
+            case differentMasses:
+                p0 = &physicsWorld.AddParticule({ -3, 0 }, 1, 0.99f);
+                p1 = &physicsWorld.AddParticule({ 3, 0 }, 10, 0.99f);
+                p0->velocity = { 5, 0 };
+                p1->velocity = { 0, 0 };
+                break;
+
+
+            case zeroRestitution:
+                p0 = &physicsWorld.AddParticule({ -3, 0 }, 3, 0.99f);
+                p1 = &physicsWorld.AddParticule({ 3, 0 }, 3, 0.99f);
+                p0->velocity = { 3, 0 };
+                p1->velocity = { -3, 0 };
+                break;
+
+
+            case midRestitution:
+                p0 = &physicsWorld.AddParticule({ -3, 0 }, 3, 0.99f);
+                p1 = &physicsWorld.AddParticule({ 3, 0 }, 3, 0.99f);
+                p0->velocity = { 4, 0 };
+                p1->velocity = { -4, 0 };
+                break;
+
+
+            case infiniteMass:
+                p0 = &physicsWorld.AddParticule({ -3, 0 }, 3, 0.99f);
+                p1 = &physicsWorld.AddParticule({ 3, 0 }, 1, 0.99f);
+                p1->SetInfiniteMass();
+                p0->velocity = { 5, 0 };
+                p1->velocity = { 0, 0 };
+                break;
+
+
+            case interpenetration:
+                p0 = &physicsWorld.AddParticule({ -0.2f, 0 }, 3, 0.99f);
+                p1 = &physicsWorld.AddParticule({ 0.2f, 0 }, 3, 0.99f);
+                p0->velocity = { 0, 0 };
+                p1->velocity = { 0, 0 };
+                break;
+
+
+            case stabilization:
+                p0 = &physicsWorld.AddParticule({ -1, 0 }, 3, 0.99f);
+                p1 = &physicsWorld.AddParticule({ 1, 0 }, 3, 0.99f);
+                p0->acceleration = { 0, 0 };
+                p1->acceleration = { 0, 0 };
+                p0->velocity = { 0.5f, 0 };
+                p1->velocity = { -0.5f, 0 };
+                break;
+			}
+
 			p0->acceleration = { 0, 0 };
 			p1->acceleration = { 0, 0 };
-			p0->velocity = { 2, 0 };
-			p1->velocity = { -5, 0 };
+
 		}
+
 		void Shutdown() {}
+
+		void SetupTest(CollisionTest test) {
+			physicsWorld = Brise::World();   
+			currentTest = test;
+			Init();                          
+		}
+
+        const char* GetTestName() const
+        {
+            switch (currentTest)
+            {
+            case simpleCollision:     return "Simple Collision";
+            case nonLinearContact:    return "Non-linear Contact";
+            case differentSpeed:      return "Different Speed";
+            case differentMasses:     return "Different Masses";
+            case zeroRestitution:     return "Zero Restitution";
+            case midRestitution:      return "Mid Restitution";
+            case infiniteMass:        return "Infinite Mass";
+            case interpenetration:    return "Interpenetration";
+            case stabilization:       return "Stabilization";
+            default:                  return "Unknown Test";
+            }
+        }
 
 	};
 }

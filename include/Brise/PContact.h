@@ -18,9 +18,8 @@ namespace Brise {
 		Vec2 contactNormal;
 		float penetration;
 
-		friend ParticleContactResolver;
+	public:
 
-	protected:
 		void Resolve(float duration) {
 			ResolveVelocity(duration);
 			ResolveInterpenetration(duration);
@@ -103,13 +102,15 @@ namespace Brise {
 	public:
 
 		ParticleContactResolver(unsigned iterations) 
-		: iterations(iterations) { }
+			: iterations(iterations) {
+			iterationsUsed = 0;
+		}
 
 		void SetIterations(unsigned iterations) {
 			iterations = iterations;
 		}
 
-		void resolveContacts(ParticleContact* contactArray, unsigned numContacts, float duration) {
+		void ResolveContacts(std::vector<ParticleContact>& contactArray, unsigned numContacts, float duration) {
 			unsigned i;
 			iterationsUsed = 0;
 
@@ -136,7 +137,7 @@ namespace Brise {
 
 	class ParticleContactGenerator {
 	public:
-		virtual unsigned AddContact(ParticleContact* contact, unsigned limit) const = 0;
+		virtual unsigned AddContact(ParticleContact& contact, unsigned limit) const = 0;
 	};
 
 }
