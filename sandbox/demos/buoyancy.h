@@ -52,6 +52,10 @@ namespace BriseSandbox {
 			Utils::DrawLine(appstate->renderer, { -13, 1}, {13, 1});
 		}
 
+		const char* GetName() const override {
+			return "Buoyancy Demo";
+		}
+
 	private:
 		void Init() {
 			Brise::Particle& p1 = physicsWorld.AddParticule({ -5, 3 }, 0.5f, 0.6);

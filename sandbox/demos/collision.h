@@ -136,8 +136,14 @@ namespace BriseSandbox {
                 5, 200,
                 GetTestName()
             );
+            SDL_SetRenderScale(appstate->renderer, 1.5, 1.5);
+            SDL_RenderDebugText(appstate->renderer, 14, 565, "Press Q, W, E, R, T... to change test");
             SDL_SetRenderScale(appstate->renderer, 1, 1);
 		}
+
+        const char* GetName() const override {
+            return "Collision Demo";
+        }
 
 	private:
 		void Init() {

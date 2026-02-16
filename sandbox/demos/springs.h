@@ -56,6 +56,10 @@ namespace BriseSandbox {
 			Utils::DrawLine(appstate->renderer, particles[3].position, particles[4].position);
 		}
 
+		const char* GetName() const override {
+			return "Springs Demo";
+		}
+
 	private:
 		void Init() {
 			Brise::Particle& p1 = physicsWorld.AddParticule({ -5, 3 }, 3, 0.9);

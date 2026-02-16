@@ -154,6 +154,13 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 
     SDL_RenderDebugText(app->renderer, 10, 10, text);
 
+    // Render demo name
+    SDL_SetRenderScale(app->renderer, 4, 4);
+    SDL_RenderDebugText(app->renderer, 5, 10, currentDemo->GetName());
+    SDL_SetRenderScale(app->renderer, 1.5, 1.5);
+    SDL_RenderDebugText(app->renderer, 13, 60, "Press 1, 2, 3, 4, 5... to change demo");
+    SDL_SetRenderScale(app->renderer, 1, 1);
+
     // Render current demo
     currentDemo->Render(app);
 

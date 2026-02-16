@@ -58,6 +58,14 @@ namespace BriseSandbox {
 
 				Utils::DrawParticleInfos(appstate->renderer, p);
 			}
+
+			SDL_SetRenderScale(appstate->renderer, 1.5, 1.5);
+			SDL_RenderDebugText(appstate->renderer, 14, 565, "Click anywhere to spawn particle");
+			SDL_SetRenderScale(appstate->renderer, 1, 1);
+		}
+
+		const char* GetName() const override {
+			return "Particles Demo";
 		}
 		
 	private:

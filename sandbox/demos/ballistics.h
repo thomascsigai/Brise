@@ -66,6 +66,17 @@ namespace BriseSandbox {
 
 				Utils::DrawParticleInfos(appstate->renderer, p);
 			}
+
+			SDL_SetRenderScale(appstate->renderer, 1.5, 1.5);
+			SDL_RenderDebugText(appstate->renderer, 14, 550, "Press Q : Pistol bullet");
+			SDL_RenderDebugText(appstate->renderer, 14, 560, "Press W : Artillery");
+			SDL_RenderDebugText(appstate->renderer, 14, 570, "Press E : Fireball");
+			SDL_RenderDebugText(appstate->renderer, 14, 580, "Press R : Laser");
+			SDL_SetRenderScale(appstate->renderer, 1, 1);
+		}
+
+		const char* GetName() const override {
+			return "Ballistics Demo";
 		}
 
 	private:
