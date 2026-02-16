@@ -5,7 +5,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 add_subdirectory(vendor/SDL EXCLUDE_FROM_ALL)
 
-add_executable(brise_sandbox main.cpp "demos/springs.h" "demos/buoyancy.h" )
+add_executable(brise_sandbox main.cpp "demos/springs.h" "demos/buoyancy.h"  "demos/collision.h")
 
 target_include_directories(brise_sandbox PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
