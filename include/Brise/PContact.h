@@ -4,6 +4,7 @@
 #include <Brise/Vec2.h>
 
 #include <limits>
+#include <vector>
 
 namespace Brise {
 
@@ -20,75 +21,13 @@ namespace Brise {
 
 	public:
 
-		void Resolve(float duration) {
-			ResolveVelocity(duration);
-			ResolveInterpenetration(duration);
-		}
-
-		float CalculateSeparatingVelocity() const {
-			Vec2 relativeVelocity = particle[0]->velocity;
-			if (particle[1]) relativeVelocity -= particle[1]->velocity;
-			return Dot(relativeVelocity, contactNormal);
-		}
+		void Resolve(float duration);
+		float CalculateSeparatingVelocity() const;
 
 	private:
-		void ResolveVelocity(float duration) {
-			float separatingVelocity = CalculateSeparatingVelocity();
 
-			// checks if particles are separating
-			if (separatingVelocity > 0) return; // no impulse required
-
-			// calculate new separating velocity
-			float newSepVelocity = -separatingVelocity * restitution;
-			float deltaVelocity = newSepVelocity - separatingVelocity;
-
-			// apply the change in proportion of the inverseMass
-			float totalInverseMass = particle[0]->GetInverseMass();
-			if (particle[1]) totalInverseMass += particle[1]->GetInverseMass();
-
-			// Checks if both particles have infiniteMass
-			if (totalInverseMass <= 0) return;
-
-			// Calculate the impulse
-			float impulse = deltaVelocity / totalInverseMass;
-			Vec2 impulsePerIMass = contactNormal * impulse;
-
-			// Apply impulse
-			particle[0]->velocity += impulsePerIMass * particle[0]->GetInverseMass();
-			if (particle[1]) {
-				particle[1]->velocity += impulsePerIMass * (- particle[1]->GetInverseMass());
-			}
-		}
-
-		void ResolveInterpenetration(float duration) {
-			// Checks if no penetration
-			if (penetration <= 0) return;
-
-			// apply the change in proportion of the inverseMass
-			float totalInverseMass = particle[0]->GetInverseMass();
-			if (particle[1]) totalInverseMass += particle[1]->GetInverseMass();
-
-			// Checks if both particles have infiniteMass
-			if (totalInverseMass <= 0) return;
-
-			// Calculate the movement amounts
-			Vec2 movePerIMass = contactNormal * (penetration / totalInverseMass);
-			
-			Vec2 particleMovement0, particleMovement1;
-			particleMovement0 = movePerIMass * particle[0]->GetInverseMass();
-			if (particle[1]) {
-				particleMovement1 = movePerIMass * (- particle[1]->GetInverseMass());
-			}
-			else {
-				particleMovement1 = { 0, 0 };
-			}
-
-			// Apply penetration resolution
-			particle[0]->position += particleMovement0;
-			if (particle[1]) {
-				particle[1]->position += particleMovement1;
-			}
-		}
+		void ResolveVelocity(float duration);
+		void ResolveInterpenetration(float duration);
 
 	};
 
