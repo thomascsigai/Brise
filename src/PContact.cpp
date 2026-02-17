@@ -88,7 +88,7 @@ namespace Brise {
 	}
 
 	void ParticleContactResolver::SetIterations(unsigned iterations) {
-		iterations = iterations;
+		this->iterations = iterations;
 	}
 
 	void ParticleContactResolver::ResolveContacts(std::vector<ParticleContact>& contactArray, unsigned numContacts, float duration) {
