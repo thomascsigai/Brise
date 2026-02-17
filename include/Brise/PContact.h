@@ -36,41 +36,14 @@ namespace Brise {
 	protected:
 
 		unsigned iterations;
-		unsigned iterationsUsed;
+		unsigned iterationsUsed = 0;
 
 	public:
 
-		ParticleContactResolver(unsigned iterations) 
-			: iterations(iterations) {
-			iterationsUsed = 0;
-		}
+		ParticleContactResolver(unsigned iterations);
 
-		void SetIterations(unsigned iterations) {
-			iterations = iterations;
-		}
-
-		void ResolveContacts(std::vector<ParticleContact>& contactArray, unsigned numContacts, float duration) {
-			unsigned i;
-			iterationsUsed = 0;
-
-			while (iterationsUsed < iterations) {
-				// Find contact with largest closing velocity
-				float max = std::numeric_limits<float>::max();
-				unsigned maxIndex = numContacts;
-				for (i = 0; i < numContacts; i++) {
-					float sepVel = contactArray[i].CalculateSeparatingVelocity();
-					
-					if (sepVel < max && (sepVel < 0 || contactArray[i].penetration > 0)) {
-						max = sepVel;
-						maxIndex = i;
-					}
-				}
-
-				if (maxIndex == numContacts) break;
-				contactArray[maxIndex].Resolve(duration);
-				iterationsUsed++;
-			}
-		}
+		void SetIterations(unsigned iterations);
+		void ResolveContacts(std::vector<ParticleContact>& contactArray, unsigned numContacts, float duration);
 
 	};
 

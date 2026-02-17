@@ -82,4 +82,35 @@ namespace Brise {
 			particle[1]->position += particleMovement1;
 		}
 	}
+
+	ParticleContactResolver::ParticleContactResolver(unsigned iterations)
+		: iterations(iterations) {
+	}
+
+	void ParticleContactResolver::SetIterations(unsigned iterations) {
+		iterations = iterations;
+	}
+
+	void ParticleContactResolver::ResolveContacts(std::vector<ParticleContact>& contactArray, unsigned numContacts, float duration) {
+		unsigned i;
+		iterationsUsed = 0;
+
+		while (iterationsUsed < iterations) {
+			// Find contact with largest closing velocity
+			float max = std::numeric_limits<float>::max();
+			unsigned maxIndex = numContacts;
+			for (i = 0; i < numContacts; i++) {
+				float sepVel = contactArray[i].CalculateSeparatingVelocity();
+
+				if (sepVel < max && (sepVel < 0 || contactArray[i].penetration > 0)) {
+					max = sepVel;
+					maxIndex = i;
+				}
+			}
+
+			if (maxIndex == numContacts) break;
+			contactArray[maxIndex].Resolve(duration);
+			iterationsUsed++;
+		}
+	}
 }
