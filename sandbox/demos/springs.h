@@ -62,27 +62,27 @@ namespace BriseSandbox {
 
 	private:
 		void Init() {
-			Brise::Particle& p1 = physicsWorld.AddParticule({ -5, 3 }, 3, 0.9);
-			Brise::Particle& p2 = physicsWorld.AddParticule({ -5, 0 }, 3, 0.9);
+			Brise::Particle& p1 = physicsWorld.AddParticule({ -5, 1 }, 3, 0.9);
+			Brise::Particle& p2 = physicsWorld.AddParticule({ -5, -2 }, 3, 0.9);
 			p1.acceleration = { 0, 0 };
 			p2.acceleration = { 0, 0 };
 			
-			springGenerator = std::make_unique<Brise::ParticleSpring>(&p1, 1, 5);
-			springGenerator2 = std::make_unique<Brise::ParticleSpring>(&p2, 1, 5);
+			springGenerator = std::make_unique<Brise::ParticleSpring>(&p1, 5, 5);
+			springGenerator2 = std::make_unique<Brise::ParticleSpring>(&p2, 5, 5);
 			physicsWorld.AddForceGenToRegistry(&p2, springGenerator.get());
 			physicsWorld.AddForceGenToRegistry(&p1, springGenerator2.get());
 
 			Brise::Particle& p3 = physicsWorld.AddParticule({ -2, 0 }, 3, 0.9);
-			Brise::Vec2 anchor = { 0, 3 };
+			Brise::Vec2 anchor = { 0, 2 };
 			anchoredSpring = std::make_unique<Brise::AnchoredParticleSpring>(anchor, 50, 3);
 			physicsWorld.AddForceGenToRegistry(&p3, anchoredSpring.get());
 
-			Brise::Particle& p4 = physicsWorld.AddParticule({ 5, 5 }, 3, 0.9);
-			Brise::Particle& p5 = physicsWorld.AddParticule({ 5, -5 }, 3, 0.9);
+			Brise::Particle& p4 = physicsWorld.AddParticule({ 5, 5 }, 3, 0.6);
+			Brise::Particle& p5 = physicsWorld.AddParticule({ 5, -5 }, 3, 0.6);
 			p4.acceleration = { 0, 0 };
 			p5.acceleration = { 0, 0 };
-			bungeeSpring = std::make_unique<Brise::ParticleBungee>(&p4, 1, 5);
-			bungeeSpring2 = std::make_unique<Brise::ParticleBungee>(&p5, 1, 5);
+			bungeeSpring = std::make_unique<Brise::ParticleBungee>(&p4, 10, 0.1);
+			bungeeSpring2 = std::make_unique<Brise::ParticleBungee>(&p5, 10, 0.1);
 			physicsWorld.AddForceGenToRegistry(&p5, bungeeSpring.get());
 			physicsWorld.AddForceGenToRegistry(&p4, bungeeSpring2.get());
 		}
