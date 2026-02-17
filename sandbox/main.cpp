@@ -11,6 +11,7 @@
 #include <springs.h>
 #include <buoyancy.h>
 #include <collision.h>
+#include <resting.h>
 
 constexpr uint32_t windowStartWidth = 1600;
 constexpr uint32_t windowStartHeight = 900;
@@ -92,6 +93,9 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         }
         else if (event->key.scancode == SDL_SCANCODE_5) {
             currentDemo = std::make_unique<BriseSandbox::CollisionDemo>();
+        }
+        else if (event->key.scancode == SDL_SCANCODE_6) {
+            currentDemo = std::make_unique<BriseSandbox::RestingContactDemo>();
         }
     }
 
