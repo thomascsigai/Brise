@@ -13,12 +13,16 @@
 #include <collision.h>
 #include <resting.h>
 #include <cables.h>
+#include <rods.h>
 
 constexpr uint32_t windowStartWidth = 1600;
 constexpr uint32_t windowStartHeight = 900;
 const char* windowTitle = "Brise Sandbox";
 
 std::unique_ptr<BriseSandbox::Demo> currentDemo;
+
+bool pauseSimulation = false;
+bool fastForward = false;
 
 SDL_AppResult SDL_Fail() {
     SDL_LogError(SDL_LOG_CATEGORY_CUSTOM, "Error %s", SDL_GetError());
@@ -80,6 +84,21 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
     }
 
     if (event->type == SDL_EVENT_KEY_DOWN) {
+        if (event->key.scancode == SDL_SCANCODE_SPACE) {
+            pauseSimulation = !pauseSimulation;
+        }
+        else if (event->key.scancode == SDL_SCANCODE_TAB) {
+            fastForward = true;
+        }
+    }
+
+    if (event->type == SDL_EVENT_KEY_UP) {
+        if (event->key.scancode == SDL_SCANCODE_TAB) {
+            fastForward = false;
+        }
+    }
+
+    if (event->type == SDL_EVENT_KEY_DOWN) {
         if (event->key.scancode == SDL_SCANCODE_1) {
             currentDemo = std::make_unique<BriseSandbox::ParticlesDemo>();
         }
@@ -100,6 +119,9 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         }
         else if (event->key.scancode == SDL_SCANCODE_7) {
             currentDemo = std::make_unique<BriseSandbox::CableDemo>();
+        }
+        else if (event->key.scancode == SDL_SCANCODE_8) {
+            currentDemo = std::make_unique<BriseSandbox::RodDemo>();
         }
     }
 
@@ -140,7 +162,10 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     }
 
     // Update current demo
-    currentDemo->Update(deltaTime);
+    if (not pauseSimulation) {
+        if (fastForward) currentDemo->Update(deltaTime);
+        currentDemo->Update(deltaTime);
+    }
 
     SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(app->renderer);
@@ -167,6 +192,8 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     SDL_RenderDebugText(app->renderer, 5, 10, currentDemo->GetName());
     SDL_SetRenderScale(app->renderer, 1.5, 1.5);
     SDL_RenderDebugText(app->renderer, 13, 60, "Press 1, 2, 3, 4, 5... to change demo");
+    SDL_RenderDebugText(app->renderer, 13, 70, "Press Space to pause simulation");
+    SDL_RenderDebugText(app->renderer, 13, 80, "Press Tab to x2 speed simulation");
     SDL_SetRenderScale(app->renderer, 1, 1);
 
     // Render current demo
