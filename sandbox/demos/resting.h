@@ -13,7 +13,9 @@ namespace BriseSandbox {
     {
     private:
         Brise::World physicsWorld;
-        std::vector<Brise::Particle*> particles;
+
+        std::vector<Brise::Particle*> single;
+        std::vector<Brise::Particle*> stack;
 
         float groundY = 0.0f;
         float radius = 0.33f;
@@ -23,17 +25,73 @@ namespace BriseSandbox {
         RestingContactDemo() { Init(); }
 
         const char* GetName() const override {
-            return "Resting Contact Stack Demo";
+            return "Resting Contact Comparison";
         }
 
-        void PollEvent(AppContext* appstate, SDL_Event* event) override {
-        }
+        void PollEvent(AppContext* appstate, SDL_Event* event) override {}
 
         void Update(double deltaTime) override
         {
             physicsWorld.Step(deltaTime);
 
-            // Contact sol pour chaque particule
+            HandleGroundContacts(single, deltaTime);
+            HandleGroundContacts(stack, deltaTime);
+
+            HandleParticleContacts(stack, deltaTime);
+        }
+
+        void Render(AppContext* app) override
+        {
+            SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+            for (auto* p : single)
+            {
+                Utils::DrawCircle(app->renderer, p->position, 25);
+                Utils::DrawParticleInfos(app->renderer, *p);
+            }
+
+            for (auto* p : stack)
+            {
+                Utils::DrawCircle(app->renderer, p->position, 25);
+                //Utils::DrawParticleInfos(app->renderer, *p);
+            }
+
+            Brise::Vec2 left = { -20, groundY };
+            Brise::Vec2 right = { 20, groundY };
+            Utils::DrawLine(app->renderer, left, right);
+        }
+
+    private:
+
+        void Init()
+        {
+            single.clear();
+            stack.clear();
+
+            // -------- Left side : single particle --------
+            single.push_back(
+                &physicsWorld.AddParticule({ -4, 5 }, 1.0f, 0.99f)
+            );
+
+            single[0]->velocity = { 0, 0 };
+
+            // -------- Right side : stack --------
+            stack.push_back(
+                &physicsWorld.AddParticule({ 4, 3 }, 1.0f, 0.99f)
+            );
+            stack.push_back(
+                &physicsWorld.AddParticule({ 4, 4 }, 1.0f, 0.99f)
+            );
+            stack.push_back(
+                &physicsWorld.AddParticule({ 4, 5 }, 1.0f, 0.99f)
+            );
+
+            for (auto* p : stack)
+                p->velocity = { 0, 0 };
+        }
+
+        void HandleGroundContacts(std::vector<Brise::Particle*>& particles, float dt)
+        {
             for (auto* p : particles)
             {
                 float penetration = (groundY + radius) - p->position.y;
@@ -48,11 +106,13 @@ namespace BriseSandbox {
                     contact.penetration = penetration;
                     contact.restitution = 0.0f;
 
-                    contact.Resolve(deltaTime);
+                    contact.Resolve(dt);
                 }
             }
+        }
 
-            // Contacts particule / particule
+        void HandleParticleContacts(std::vector<Brise::Particle*>& particles, float dt)
+        {
             for (size_t i = 0; i < particles.size(); ++i)
             {
                 for (size_t j = i + 1; j < particles.size(); ++j)
@@ -75,41 +135,13 @@ namespace BriseSandbox {
                         contact.penetration = penetration;
                         contact.restitution = 0.0f;
 
-                        contact.Resolve(deltaTime);
+                        contact.Resolve(dt);
                     }
                 }
             }
         }
-
-        void Render(AppContext* app) override
-        {
-            SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-
-            for (auto* p : particles)
-            {
-                Utils::DrawCircle(app->renderer, p->position, 25);
-                //Utils::DrawParticleInfos(app->renderer, *p);
-            }
-
-            Brise::Vec2 left = { -20, groundY };
-            Brise::Vec2 right = { 20, groundY };
-            Utils::DrawLine(app->renderer, left, right);
-        }
-
-    private:
-
-        void Init()
-        {
-            particles.clear();
-
-            particles.push_back(&physicsWorld.AddParticule({ 0, 3 }, 1.0f, 0.99f));
-            particles.push_back(&physicsWorld.AddParticule({ 0, 4 }, 1.0f, 0.99f));
-            particles.push_back(&physicsWorld.AddParticule({ 0, 5 }, 1.0f, 0.99f));
-
-            for (auto* p : particles)
-                p->velocity = { 0, 0 };
-        }
     };
+
 
 
 }
