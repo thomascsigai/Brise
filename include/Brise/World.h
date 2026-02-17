@@ -2,6 +2,7 @@
 
 #include <Brise/Particle.h>
 #include <Brise/PForceGen.h>
+#include <Brise/PContact.h>
 #include <Brise/Vec2.h>
 #include <vector>
 
@@ -13,10 +14,19 @@ namespace Brise {
 
 	public:
 		using ParticleContainer = std::vector<Particle>;
+		using ContactGenerators = std::vector<ParticleContactGenerator*>;
+		using ParticleContacts = std::vector<ParticleContact>;
 
+		ParticleContacts contacts;
+		ParticleContactResolver resolver;
+		ContactGenerators contactGenerators;
+	
 	private:
 		ParticleContainer particles;
 		ParticleForceRegistry forceRegistry;
+		
+		unsigned maxContacts;
+
 		Vec2 gravity; // World gravity acceleration
 
 	public:
@@ -30,6 +40,7 @@ namespace Brise {
 		const ParticleContainer& GetParticles() const;
 
 		void AddForceGenToRegistry(Particle* particle, ParticleForceGenerator* fg);
+		void AddContactGenerator(ParticleContactGenerator* generator);
 
 	private:
 
@@ -38,6 +49,8 @@ namespace Brise {
 
 		void SetGravity(Vec2 gravityForce);
 		Vec2 GetGravity();
+
+		unsigned GenerateContacts();
 	};
 
 }
