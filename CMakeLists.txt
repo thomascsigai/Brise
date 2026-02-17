@@ -19,6 +19,7 @@ add_library(
 	src/PForceGen.cpp
 	src/World.cpp
 	src/PContact.cpp
+	src/PLinks.cpp
 )
 
 target_include_directories(brise PUBLIC ${PROJECT_SOURCE_DIR}/include)
