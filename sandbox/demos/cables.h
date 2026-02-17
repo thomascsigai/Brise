@@ -13,13 +13,7 @@ namespace BriseSandbox {
     {
     private:
         Brise::World physicsWorld;
-
-        Brise::Particle* p0;
-        Brise::Particle* p1;
-        Brise::Particle* p2;
-
-        std::unique_ptr<Brise::ParticleCable> cable;
-        std::unique_ptr<Brise::ParticleCable> cable2;
+        std::vector<std::unique_ptr<Brise::ParticleCable>> cables;
 
         float particleRadius = 25;
 
@@ -50,39 +44,76 @@ namespace BriseSandbox {
                 Utils::DrawParticleInfos(app->renderer, p);
             }
 
-            // Draw cable
-            Utils::DrawLine(app->renderer, p0->position, p1->position);
-            Utils::DrawLine(app->renderer, p1->position, p2->position);
+            for (const auto& cable : cables)
+            {
+                Utils::DrawLine(
+                    app->renderer,
+                    cable->particle[0]->position,
+                    cable->particle[1]->position
+                );
+            }
         }
 
     private:
 
         void Init()
         {
-            p0 = &physicsWorld.AddParticule({ -2, 2 }, 1.0f, 0.99f);
-            p0->SetInfiniteMass();
+            {
+                auto* p0 = &physicsWorld.AddParticule({ -5, 3 }, 1.0f, 0.99f);
+                p0->SetInfiniteMass();
+                auto* p1 = &physicsWorld.AddParticule({ -2, 0 }, 1.0f, 0.99f);
 
-            p1 = &physicsWorld.AddParticule({ 2, 2 }, 1.0f, 0.99f);
-            p2 = &physicsWorld.AddParticule({ 4, 2 }, 1.0f, 0.99f);
+                auto cable = std::make_unique<Brise::ParticleCable>();
+                cable->particle[0] = p0;
+                cable->particle[1] = p1;
+                cable->maxLength = 3.0f;
+                cable->restitution = 0.3f;
 
-            p0->velocity = { 0, 0 };
-            p1->velocity = { 0, 0 };
+                physicsWorld.AddContactGenerator(cable.get());
+                cables.push_back(std::move(cable));
+            }
 
-            cable = std::make_unique<Brise::ParticleCable>();
-            cable2 = std::make_unique<Brise::ParticleCable>();
+            {
+                auto* p0 = &physicsWorld.AddParticule({ -5, -1}, 1.0f, 0.99f);
+                auto* p1 = &physicsWorld.AddParticule({ -2, -3 }, 1.0f, 0.99f);
+                p0->acceleration = { 0, 0 };
+                p0->velocity = { 3, 0 };
+                p1->acceleration = { 0, 0 };
 
-            cable->particle[0] = p0;
-            cable->particle[1] = p1;
-            cable->maxLength = 3.0f;
-            cable->restitution = 0.5f;
+                auto cable = std::make_unique<Brise::ParticleCable>();
+                cable->particle[0] = p0;
+                cable->particle[1] = p1;
+                cable->maxLength = 3.0f;
+                cable->restitution = 0.3f;
 
-            cable2->particle[0] = p1;
-            cable2->particle[1] = p2;
-            cable2->maxLength = 3.0f;
-            cable2->restitution = 0.5f;
+                physicsWorld.AddContactGenerator(cable.get());
+                cables.push_back(std::move(cable));
+            }
 
-            physicsWorld.AddContactGenerator(cable.get());
-            physicsWorld.AddContactGenerator(cable2.get());
+            {
+                auto* a = &physicsWorld.AddParticule({ 5, 3 }, 1.0f, 0.99f);
+                a->SetInfiniteMass();
+                auto* b = &physicsWorld.AddParticule({ 7, 1 }, 1.0f, 0.99f);
+                auto* c = &physicsWorld.AddParticule({ 9, 3 }, 1.0f, 0.99f);
+
+                auto cable1 = std::make_unique<Brise::ParticleCable>();
+                cable1->particle[0] = a;
+                cable1->particle[1] = b;
+                cable1->maxLength = 3.0f;
+                cable1->restitution = 0.3f;
+
+                auto cable2 = std::make_unique<Brise::ParticleCable>();
+                cable2->particle[0] = b;
+                cable2->particle[1] = c;
+                cable2->maxLength = 3.0f;
+                cable2->restitution = 0.3f;
+
+                physicsWorld.AddContactGenerator(cable1.get());
+                physicsWorld.AddContactGenerator(cable2.get());
+
+                cables.push_back(std::move(cable1));
+                cables.push_back(std::move(cable2));
+            }
         }
     };
 
