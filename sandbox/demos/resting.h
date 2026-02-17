@@ -25,7 +25,7 @@ namespace BriseSandbox {
         RestingContactDemo() { Init(); }
 
         const char* GetName() const override {
-            return "Resting Contact Comparison";
+            return "Resting Contact Demo";
         }
 
         void PollEvent(AppContext* appstate, SDL_Event* event) override {}

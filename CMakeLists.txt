@@ -18,6 +18,7 @@ add_library(
 	src/Vec2.cpp
 	src/PForceGen.cpp
 	src/World.cpp
+	src/PContact.cpp
 )
 
 target_include_directories(brise PUBLIC ${PROJECT_SOURCE_DIR}/include)
