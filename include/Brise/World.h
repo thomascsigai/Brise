@@ -34,8 +34,7 @@ namespace Brise {
 
 	public:
 
-		/// <param name="numParticles">: Should be above the number of particles your world will contains.
-		/// Works even if the number of particles exceeds this.</param>
+		// numParticles should be above the number of particles your world will contains
 		explicit World(size_t numParticles = DEFAULT_NUM_PARTICLES, float fixedTimeStep = 1.0f / 120.0f);
 
 		void Update(float deltaTime);
