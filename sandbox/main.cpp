@@ -162,9 +162,13 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     }
 
     // Update current demo
-    if (not pauseSimulation) {
-        if (fastForward) currentDemo->Update(deltaTime);
-        currentDemo->Update(deltaTime);
+    if (!pauseSimulation) {
+        float simulationDt = static_cast<float>(deltaTime);
+
+        if (fastForward)
+            simulationDt *= 2.0f;
+
+        currentDemo->Update(simulationDt);
     }
 
     SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);

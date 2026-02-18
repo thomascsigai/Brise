@@ -1,18 +1,29 @@
 #include <Brise/World.h>
 
 namespace Brise {
-	World::World(size_t numParticles) 
-	: resolver(0) {
+	World::World(size_t numParticles, float fixedTimeStep)
+	: resolver(0), fixedDt(fixedTimeStep) {
 		Init(numParticles);
 	}
 
-	void World::Step(float deltaTime) {
+	void World::Update(float deltaTime) {
+		accumulator += deltaTime;
+
+		while (accumulator >= fixedDt)
+		{
+			Step(fixedDt);
+			accumulator -= fixedDt;
+		}
+
+	}
+
+	void World::Step(float fixedDt) {
 		// Apply the force generators
-		forceRegistry.UpdateForces(deltaTime);
+		forceRegistry.UpdateForces(fixedDt);
 
 		// Integrate the particles
 		for (auto& p : particles) {
-			p.Integrate(deltaTime);
+			p.Integrate(fixedDt);
 		}
 
 		// Generate Contacts
@@ -20,8 +31,8 @@ namespace Brise {
 
 		// Process the contacts
 		if (usedContacts) {
-			resolver.SetIterations(usedContacts * 2);
-			resolver.ResolveContacts(contacts, usedContacts, deltaTime);
+			resolver.SetIterations(usedContacts);
+			resolver.ResolveContacts(contacts, usedContacts, fixedDt);
 		}
 	}
 

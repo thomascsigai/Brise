@@ -30,9 +30,9 @@ namespace BriseSandbox {
 
         void PollEvent(AppContext* appstate, SDL_Event* event) override {}
 
-        void Update(double deltaTime) override
+        void Update(float deltaTime) override
         {
-            physicsWorld.Step(deltaTime);
+            physicsWorld.Update(deltaTime);
 
             HandleGroundContacts(single, deltaTime);
             HandleGroundContacts(stack, deltaTime);

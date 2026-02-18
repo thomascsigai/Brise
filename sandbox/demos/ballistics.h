@@ -48,8 +48,8 @@ namespace BriseSandbox {
 			}
 		}
 
-		void Update(double deltaTime) override {
-			physicsWorld.Step(deltaTime);
+		void Update(float deltaTime) override {
+			physicsWorld.Update(deltaTime);
 		}
 
 		void Render(AppContext* appstate) override {

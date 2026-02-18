@@ -65,7 +65,8 @@ namespace Brise {
 		if (totalInverseMass <= 0) return;
 
 		// Calculate the movement amounts
-		Vec2 movePerIMass = contactNormal * (penetration / totalInverseMass);
+		float percent = 0.8f;
+		Vec2 movePerIMass = contactNormal * ((penetration * percent) / totalInverseMass);
 
 		Vec2 particleMovement0, particleMovement1;
 		particleMovement0 = movePerIMass * particle[0]->GetInverseMass();

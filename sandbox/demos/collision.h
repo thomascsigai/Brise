@@ -88,8 +88,8 @@ namespace BriseSandbox {
             }
 		}
 
-		void Update(double deltaTime) override {
-			physicsWorld.Step(deltaTime);
+		void Update(float deltaTime) override {
+            physicsWorld.Update(deltaTime);
 
 			Brise::World::ParticleContainer particles = physicsWorld.GetParticles();
 			float distanceP0P1 = Brise::Magnitude(p0->position - p1->position);

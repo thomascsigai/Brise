@@ -28,9 +28,9 @@ namespace BriseSandbox {
 
         void PollEvent(AppContext* appstate, SDL_Event* event) override {}
 
-        void Update(double deltaTime) override
+        void Update(float deltaTime) override
         {
-            physicsWorld.Step(deltaTime);
+            physicsWorld.Update(deltaTime);
         }
 
         void Render(AppContext* app) override
@@ -61,9 +61,25 @@ namespace BriseSandbox {
         void Init()
         {
             {
-                auto* p0 = &physicsWorld.AddParticule({ -8, 3 }, 1.0f, 0.99f);
+                auto* p0 = &physicsWorld.AddParticule({ -6, 3 }, 1.0f, 0.99f);
+                auto* p1 = &physicsWorld.AddParticule({ -7, 0 }, 1.0f, 0.99f);
+                p0->acceleration = { 0, 0 };
+                p1->acceleration = { 0, 0 };
+                p1->velocity = { 0, -1 };
+
+                auto rod = std::make_unique<Brise::ParticleRod>();
+                rod->particle[0] = p0;
+                rod->particle[1] = p1;
+                rod->length = 3.0f;
+
+                physicsWorld.AddContactGenerator(rod.get());
+                rods.push_back(std::move(rod));
+            }
+
+            {
+                auto* p0 = &physicsWorld.AddParticule({ 0, 2 }, 1.0f, 0.99f);
                 p0->SetInfiniteMass();
-                auto* p1 = &physicsWorld.AddParticule({ -8, 0 }, 1.0f, 0.99f);
+                auto* p1 = &physicsWorld.AddParticule({ 3, 2 }, 1.0f, 0.99f);
 
                 auto rod = std::make_unique<Brise::ParticleRod>();
                 rod->particle[0] = p0;
@@ -75,37 +91,10 @@ namespace BriseSandbox {
             }
 
             {
-                auto* p0 = &physicsWorld.AddParticule({ -2, 3 }, 1.0f, 0.99f);
-                p0->SetInfiniteMass();
-                auto* p1 = &physicsWorld.AddParticule({ 1, 3 }, 1.0f, 0.99f);
-
-                auto rod = std::make_unique<Brise::ParticleRod>();
-                rod->particle[0] = p0;
-                rod->particle[1] = p1;
-                rod->length = 3.0f;
-
-                physicsWorld.AddContactGenerator(rod.get());
-                rods.push_back(std::move(rod));
-            }
-
-            {
-                auto* p0 = &physicsWorld.AddParticule({ 4, 3 }, 2.0f, 0.99f);
-                auto* p1 = &physicsWorld.AddParticule({ 7, 3 }, 1.0f, 0.99f);
-
-                auto rod = std::make_unique<Brise::ParticleRod>();
-                rod->particle[0] = p0;
-                rod->particle[1] = p1;
-                rod->length = 3.0f;
-
-                physicsWorld.AddContactGenerator(rod.get());
-                rods.push_back(std::move(rod));
-            }
-
-            {
-                auto* a = &physicsWorld.AddParticule({ 10, 4 }, 1.0f, 0.99f);
-                a->SetInfiniteMass();
-                auto* b = &physicsWorld.AddParticule({ 12, 3 }, 1.0f, 0.99f);
-                auto* c = &physicsWorld.AddParticule({ 14, 1 }, 1.0f, 0.99f);
+                auto* a = &physicsWorld.AddParticule({ 6, 2 }, 0.5f, 0.99f);
+                a->SetInfiniteMass();                            
+                auto* b = &physicsWorld.AddParticule({ 8, 4 }, 0.5f, 0.99f);
+                auto* c = &physicsWorld.AddParticule({ 8, 7 }, 0.5f, 0.99f);
 
                 auto rod1 = std::make_unique<Brise::ParticleRod>();
                 rod1->particle[0] = a;

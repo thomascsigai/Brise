@@ -29,13 +29,17 @@ namespace Brise {
 
 		Vec2 gravity; // World gravity acceleration
 
+		float fixedDt;
+		float accumulator = 0;
+
 	public:
 
 		/// <param name="numParticles">: Should be above the number of particles your world will contains.
 		/// Works even if the number of particles exceeds this.</param>
-		explicit World(size_t numParticles = DEFAULT_NUM_PARTICLES);
+		explicit World(size_t numParticles = DEFAULT_NUM_PARTICLES, float fixedTimeStep = 1.0f / 60.0f);
 
-		void Step(float deltaTime);
+		void Update(float deltaTime);
+
 		Particle& AddParticule(Vec2 position, float mass, float damping);
 		const ParticleContainer& GetParticles() const;
 
@@ -43,9 +47,10 @@ namespace Brise {
 		void AddContactGenerator(ParticleContactGenerator* generator);
 
 	private:
-
 		void Init(size_t numParticles);
 		void Shutdown();
+
+		void Step(float fixedDt);
 
 		void SetGravity(Vec2 gravityForce);
 		Vec2 GetGravity();
