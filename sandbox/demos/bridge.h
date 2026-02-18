@@ -37,8 +37,6 @@ namespace BriseSandbox {
                     if (cables.size() > 2) {
                         physicsWorld.RemoveContactGenerator(cables[2].get());
                         cables.erase(cables.begin() + 2);
-
-                        std::cout << "Cable broken!" << std::endl;
                     }
                 }
             }
@@ -74,6 +72,9 @@ namespace BriseSandbox {
                 bridgeParticles.back()->position,
                 {15, 1}
             );
+            SDL_SetRenderScale(app->renderer, 1.5, 1.5);
+            SDL_RenderDebugText(app->renderer, 14, 565, "Press Return to break the bridge");
+            SDL_SetRenderScale(app->renderer, 1, 1);
         }
 
     private:
