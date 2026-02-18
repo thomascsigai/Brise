@@ -90,4 +90,11 @@ namespace Brise {
 	void World::AddContactGenerator(ParticleContactGenerator* generator) {
 		contactGenerators.push_back(generator);
 	}
+
+	void World::RemoveContactGenerator(ParticleContactGenerator* generator) {
+		contactGenerators.erase(
+			std::remove(contactGenerators.begin(), contactGenerators.end(), generator),
+			contactGenerators.end()
+		);
+	}
 }

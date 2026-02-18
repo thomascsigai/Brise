@@ -36,7 +36,7 @@ namespace Brise {
 
 		/// <param name="numParticles">: Should be above the number of particles your world will contains.
 		/// Works even if the number of particles exceeds this.</param>
-		explicit World(size_t numParticles = DEFAULT_NUM_PARTICLES, float fixedTimeStep = 1.0f / 60.0f);
+		explicit World(size_t numParticles = DEFAULT_NUM_PARTICLES, float fixedTimeStep = 1.0f / 120.0f);
 
 		void Update(float deltaTime);
 
@@ -44,7 +44,9 @@ namespace Brise {
 		const ParticleContainer& GetParticles() const;
 
 		void AddForceGenToRegistry(Particle* particle, ParticleForceGenerator* fg);
+		
 		void AddContactGenerator(ParticleContactGenerator* generator);
+		void RemoveContactGenerator(ParticleContactGenerator* generator);
 
 	private:
 		void Init(size_t numParticles);
