@@ -14,6 +14,8 @@
 #include <resting.h>
 #include <cables.h>
 #include <rods.h>
+#include <cube.h>
+#include <bridge.h>
 
 constexpr uint32_t windowStartWidth = 1600;
 constexpr uint32_t windowStartHeight = 900;
@@ -122,6 +124,12 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
         }
         else if (event->key.scancode == SDL_SCANCODE_8) {
             currentDemo = std::make_unique<BriseSandbox::RodDemo>();
+        }
+        else if (event->key.scancode == SDL_SCANCODE_9) {
+            currentDemo = std::make_unique<BriseSandbox::CubeRodDemo>();
+        }
+        else if (event->key.scancode == SDL_SCANCODE_0) {
+            currentDemo = std::make_unique<BriseSandbox::CableBridgeDemo>();
         }
     }
 
