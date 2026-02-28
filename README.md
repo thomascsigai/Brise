@@ -22,7 +22,7 @@ A lightweight 2D mass-aggregate physics engine written in C++20, designed for ga
 ### Build
 
 ```bash
-git clone https://github.com/thomascsigai/Brise.git
+git clone --recursive https://github.com/thomascsigai/Brise.git
 cd Brise
 cmake -B build
 cmake --build build
